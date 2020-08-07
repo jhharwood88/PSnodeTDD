@@ -24,13 +24,23 @@ describe('sinon tests', function(){
                     //otherwise just call the cb
                     cb();
                 }
-                cb();
+            },
+            addclass: function(schedule) {
+                if(!schedule.classIsFull()){
+                    // code to be executed
+                    return true;
+                } else {
+                    return false; 
+                }
             }
         };
 
         schedule = {
             dropClass: function() {
                 console.log('Class dropped');
+            },
+            classIsFull: function(){
+                return true;
             }
         };
     });
@@ -65,5 +75,28 @@ describe('sinon tests', function(){
             schedule.dropClass.called.should.be.true;
         });
 
+    });
+
+    //Stubs are a way to watch an entire object, because we most often work with objects its more common to use stubs than spies. 
+
+    describe('student with stubs', function(){
+
+        it('should call a stubbed method', function(){
+            var stub = sinon.stub(schedule);
+            //when calling a stub on an object, it replaces all the fucntions on that object with a stub function. When calling them, you would reference the stub itself rather than the object.
+            student.dropClass(1, stub.dropClass);
+            stub.dropClass.called.should.be.true;
+            //stubs will not call the inner implentation of an underlying method, even though the scheudle.dropClass console logs it wont call the log. 
+            //Because the stub is an object, it can be called the same as a regular object.
+        });
+        it('should return true whne the class is full', function(){
+            var stub = sinion.stub(schedule);
+            stub.classIsFull.returns(false);
+            // this will allow the test to evaluate the stub, otherwise causing the test to continuously fail as the classIsFull method would always return true.
+            var returnVal = student.addclass(stub);
+            returnVal.should.be.true 
+
+            //This shows the power of stubs, as you gain more control over them than you would with spies and because they control an entire object they are often much more convinient.
+        });
     });
 });
