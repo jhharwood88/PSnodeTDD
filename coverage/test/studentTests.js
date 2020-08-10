@@ -34,4 +34,13 @@ describe("Student", function () {
     
     student.grade.should.equal(studentGrade+1);
   });
+
+  it('should print out the correct value when tostring is called', function() {
+    var student = Student.create(studentName, studentGrade);
+    
+    var tostring = student.toString();
+    
+    tostring.should.equal(student.id + "\t" + studentName);
+  })
+    // extra test to add aditional coverage for the student.js file
 });

@@ -1,5 +1,7 @@
 'use strict';
 
+//test coverage is used to help impove documentation on code by showing which code has been tested. This allows you to find gaps within your test coverage and to fill those in. The way we find out what coverage is there, we make use of the coverage tool 'Istanbul'. This will give us a percentage of code that has been covered by the testing. It will also create a coverage report, viewable as a html file that can be opened in the browser. From this we can see the breakdown of specific files, as well as coverage of specific functions.
+
 function Course () {}
 
 Course.create = function (name, code, description) {
