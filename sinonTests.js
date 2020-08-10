@@ -70,7 +70,7 @@ describe('sinon tests', function(){
 
         it('should call the callback even if its a method of an object', function(){
             // Cant simply wrap it and pass in the function, it will create a spy wrapped around the dropclass fucntion but it will be a lone function on the invoked object. Will not replace the function with a spy. Can not read 'property'. To solve this, replace the method with spy, first pass in object the method is on and second is the name of the method as a stirng. This will repalce the wrapped method with a spy.
-            sinion.spy(schedule, 'dropClass');
+            sinon.spy(schedule, 'dropClass');
             student.dropClass(1, schedule);
             schedule.dropClass.called.should.be.true;
         });
@@ -90,7 +90,7 @@ describe('sinon tests', function(){
             //Because the stub is an object, it can be called the same as a regular object.
         });
         it('should return true whne the class is full', function(){
-            var stub = sinion.stub(schedule);
+            var stub = sinon.stub(schedule);
             stub.classIsFull.returns(false);
             // this will allow the test to evaluate the stub, otherwise causing the test to continuously fail as the classIsFull method would always return true.
             var returnVal = student.addclass(stub);
@@ -99,4 +99,21 @@ describe('sinon tests', function(){
             //This shows the power of stubs, as you gain more control over them than you would with spies and because they control an entire object they are often much more convinient.
         });
     });
+
+    describe('student with mocks', function(){
+        it('mocks schedule', function(){
+            // differs from spies or stubs as it allows you to setup the test before the code executes. This allows you to set expectations for the code, and will pass or fail based off those expectations.
+            var mockObj = sinon.mock(schedule);
+            var expectation = mockObj.expects('class is full').once();
+            // this sets up the expectation that the class is full method will be called one time
+
+            student.addClass(schedule);
+            // this is the real scheulde object modified through sinon
+            expectation.verify();
+            // this is to verify the call to mocks is being executed as intended
+
+            // mocks can be used, but often stubs will do what you need for testing
+
+        })
+    })
 });
