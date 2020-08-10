@@ -47,7 +47,16 @@ _p.addTimes = function (days, times) {
     times = [times];
   }
   
- 
+  var validDays = [
+    "Monday"
+  , "Tuesday"
+  , "Wednesday"
+  , "Thursday"
+  , "Friday"
+  , "Saturday"
+  , "Sunday"
+  ];
+  
   days.forEach(function (day) {
 
     times.forEach(function (time) {
