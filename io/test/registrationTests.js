@@ -1,3 +1,4 @@
+/// <reference path="../typings/mocha/mocha.d.ts"/>
 'use strict';
 
 //jshint expr: true
@@ -12,69 +13,54 @@ var Course = require("../Course")
   
 chai.should(); 
 
-describe("tests for adding a student to a course", function () {
+describe("Registration", function () {
   var dataLoader
     , student
     , course
     , registration
     ;
-  
-  beforeEach(function () {
-    dataLoader = sinon.stub(new DataLoader ());
     
-    dataLoader.getCourseSync.returns({
-      maxSize: 2
-    , students: []
-    , id: 1
-    });
-    dataLoader.saveCourseSync.returns(true);
-    
-    dataLoader.getStudentSync.returns({
-      name: "susan"
-    , id: 1
-    });
-    
-    student = Student.create(dataLoader);
+  beforeEach(function() {
+    dataLoader = sinon.stub(new DataLoader());
     course = Course.create(dataLoader);
+    student = Student.create(dataLoader);
     
-    registration = Registration.create(course, student);
-  });
-  
-  it("tests that the correct functions were called on success", function () {
-    registration.registerStudentForCourse(1, 1);
-    
-    sinon.assert.calledOnce(dataLoader.getCourseSync);
-    sinon.assert.calledOnce(dataLoader.saveCourseSync);
-    
-    sinon.assert.calledOnce(dataLoader.getStudentSync);
-    
-    dataLoader.getCourseSync.getCall(0).calledWith(1).should.be.true;
-    dataLoader.getStudentSync.getCall(0).calledWith(1).should.be.true;
-  });
-  
-  it("ensures that save isn't called if the course is full", function () {
-    dataLoader.getCourseSync.returns({
-      maxSize: 2
-    , students: [{id:2}, {id:3}]
-    , id: 1
+    dataLoader.saveCourseSync.returns(true);
+    dataLoader.getStudentSync.returns({
+      name: "Susan", id:1
+    // this is to allow the stub to funciton properly so that it can have data if its called
     });
-    
+  });
+  
+  it("doesn't call save if the course is full", function() {
+    var registration = Registration.create(course, student);
+    dataLoader.getCourseSync.returns({
+      maxSize: 2,
+      students: [{id:2}, {id:3}],
+      id: 1
+    });
+    //This is where sinon stubs come in handy, we use them to tell the data loader what to load when someone calls it. We give the object paramters to return based off what we need for the test.
+
     registration.registerStudentForCourse(1, 1);
     
     sinon.assert.notCalled(dataLoader.saveCourseSync);
+    // this is the assertion that save was not called, which is the function that is called if the course is not full
   });
   
-  it("returns true if student was added to course", function () {
-    registration.registerStudentForCourse(1, 1).should.be.true;
-  });
-  
-  it("returns false if student was not added to course", function () {
+  it("does call save if the course is not full", function() {
+    var registration = Registration.create(course, student);
     dataLoader.getCourseSync.returns({
-      maxSize: 2
-    , students: [{id:2}, {id:3}]
-    , id: 1
+      maxSize: 3,
+      students: [{id:2}, {id:3}],
+      id: 1
     });
     
-    registration.registerStudentForCourse(1, 1).should.be.false;
+    registration.registerStudentForCourse(1, 1);
+    
+    sinon.assert.called(dataLoader.saveCourseSync);
+    //similarly to the previous assertion, this is to make sure the course is saved when the course is not full
   });
+
+  //this is a good example of sinon mocking to be able to test code within a unit, this unit is not just a single class but it also has multipel objects assocaited with it. Because they are simple objects they can be assocaitged with the registration object.
+  
 });
